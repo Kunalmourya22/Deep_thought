@@ -1,0 +1,25 @@
+import { Selector, Role } from 'testcafe';
+
+// Define user role with login details
+const regularUser = Role('https://sdlms.dt.com', async t => {
+    await t
+        .typeText('#username', 'your_username')   // Replace with your username
+        .typeText('#password', 'your_password')   // Replace with your password
+        .click('#login-button');
+});
+
+fixture `Automated User Login`
+    .page `https://sdlms.dt.com`;
+
+test('User can log in successfully', async t => {
+    await t.useRole(regularUser);
+    await t.expect(Selector('.dashboard').exists).ok(); // Check if dashboard element exists after login
+});
+
+test('User receives error message for incorrect credentials', async t => {
+    await t
+        .typeText('#username', 'invalid_username')
+        .typeText('#password', 'invalid_password')
+        .click('#login-button');
+    await t.expect(Selector('.error-message').innerText).contains('Invalid credentials'); // Check error message
+});
